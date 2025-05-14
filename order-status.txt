@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pesanan | Hexahustle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-6 space-y-6">
+
+  <h1 class="text-2xl font-bold text-center mb-4">📦 Status Pesanan</h1>
+
+  <div id="daftarPesanan" class="space-y-4"></div>
+
+  <script>
+    // Contoh data pesanan (dapat berasal dari halaman pembayaran atau simpan secara dinamis)
+    let pesanan = JSON.parse(localStorage.getItem('riwayatPesananHexahustle')) || [];
+
+    function tampilkanPesanan() {
+      const daftar = document.getElementById('daftarPesanan');
+      if (pesanan.length === 0) {
+        daftar.innerHTML = '<p class="text-center text-gray-400">Belum ada pesanan.</p>';
+        return;
+      }
+
+      daftar.innerHTML = '';
+      pesanan.forEach((item, i) => {
+        daftar.innerHTML += `
+          <div class="bg-gray-800 p-4 rounded shadow-md">
+            <p><strong>Produk:</strong> ${item.nama}</p>
+            <p><strong>Harga:</strong> Rp${item.harga.toLocaleString('id-ID')}</p>
+            <p><strong>Status:</strong> 
+              <span class="font-bold ${
+                item.status === 'Sedang Diproses' ? 'text-yellow-400' :
+                item.status === 'Dikirim' ? 'text-blue-400' :
+                'text-green-400'
+              }">${item.status}</span>
+            </p>
+            <p class="text-sm text-gray-400">📅 ${new Date(item.tanggal).toLocaleString()}</p>
+          </div>
+        `;
+      });
+    }
+
+    // Simulasi notifikasi update status
+    function simulasiUpdateStatus() {
+      pesanan = pesanan.map((p, i) => {
+        if (p.status === 'Sedang Diproses') p.status = 'Dikirim';
+        else if (p.status === 'Dikirim') p.status = 'Selesai';
+        return p;
+      });
+      localStorage.setItem('riwayatPesananHexahustle', JSON.stringify(pesanan));
+      tampilkanPesanan();
+      alert('✅ Status pesanan diperbarui.');
+    }
+
+    // Tombol simulasi update
+    const tombolUpdate = document.createElement('button');
+    tombolUpdate.innerText = '🔁 Simulasi Update Status';
+    tombolUpdate.className = 'bg-gray-700 px-4 py-2 rounded hover:bg-gray-600';
+    tombolUpdate.onclick = simulasiUpdateStatus;
+    document.body.appendChild(tombolUpdate);
+
+    // Inisialisasi tampilan
+    tampilkanPesanan();
+  </script>
+</body>
+</html>

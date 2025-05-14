@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pesan | Hexahustle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-6 space-y-6">
+
+  <h1 class="text-2xl font-bold text-center mb-4">💬 Chat dengan Admin</h1>
+
+  <!-- Area Chat -->
+  <div id="chatArea" class="bg-gray-800 p-4 rounded h-72 overflow-y-scroll mb-4">
+    <!-- Pesan akan ditampilkan di sini -->
+  </div>
+
+  <!-- Form Kirim Pesan -->
+  <form id="chatForm" class="flex items-center space-x-2" onsubmit="kirimPesan(event)">
+    <input id="pesanInput" type="text" placeholder="Tulis pesan..." class="w-full p-2 rounded bg-gray-700 text-white" required />
+    <button type="submit" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Kirim</button>
+  </form>
+
+  <script>
+    // Ambil chat yang sudah ada dari localStorage
+    let chat = JSON.parse(localStorage.getItem('chatHexahustle')) || [];
+
+    function tampilkanChat() {
+      const chatArea = document.getElementById('chatArea');
+      chatArea.innerHTML = '';  // Clear chat area
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pesan | Hexahustle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-6 space-y-6">
+
+  <h1 class="text-2xl font-bold text-center mb-4">💬 Chat dengan Admin</h1>
+
+  <!-- Notifikasi jika ada balasan baru -->
+  <div id="notifikasi" class="hidden p-3 bg-yellow-600 text-black text-center rounded">
+    Anda memiliki balasan baru dari Admin!
+  </div>
+
+  <!-- Area Chat -->
+  <div id="chatArea" class="bg-gray-800 p-4 rounded h-72 overflow-y-scroll mb-4">
+    <!-- Pesan akan ditampilkan di sini -->
+  </div>
+
+  <!-- Form Kirim Pesan -->
+  <form id="chatForm" class="flex items-center space-x-2" onsubmit="kirimPesan(event)">
+    <input id="pesanInput" type="text" placeholder="Tulis pesan..." class="w-full p-2 rounded bg-gray-700 text-white" required />
+    <button type="submit" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Kirim</button>
+  </form>
+
+  <script>
+    // Ambil chat yang sudah ada dari localStorage
+    let chat = JSON.parse(localStorage.getItem('chatHexahustle')) || [];
+
+    function tampilkanChat() {
+      const chatArea = document.getElementById('chatArea');
+      const notifikasi = document.getElementById('notifikasi');
+      chatArea.innerHTML = '';  // Clear chat area
+
+      chat.forEach((message, index) => {
+        const isAdmin = message.dari === 'admin';
+        chatArea.innerHTML += `
+          <div class="mb-3 ${isAdmin ? 'bg-blue-900 text-white' : 'bg-gray-700 text-gray-300'} p-2 rounded max-w-xs ${isAdmin ? 'ml-auto' : 'mr-auto'}">
+            <strong>${isAdmin ? 'Admin' : 'Anda'}:</strong> ${message.teks}
+            ${!isAdmin && !message.dibaca ? `<span class="text-yellow-400 ml-2">(Belum Dibaca)</span>` : ''}
+          </div>
+        `;
+      });
+
+      // Scroll ke pesan terakhir
+      chatArea.scrollTop = chatArea.scrollHeight;
+
+      // Jika ada pesan dari admin yang belum dibaca, tampilkan notifikasi
+      const belumDibaca = chat.some(msg => msg.dari === 'admin' && !msg.dibaca);
+      if (belumDibaca) {
+        notifikasi.classList.remove('hidden');
+      } else {
+        notifikasi.classList.add('hidden');
+      }
+    }
+
+    function kirimPesan(event) {
+      event.preventDefault();
+      const pesanInput = document.getElementById('pesanInput');
+      const pesan = pesanInput.value.trim();
+
+      if (pesan) {
+        // Simpan pesan yang dikirim oleh user
+        chat.push({ dari: 'user', teks: pesan, dibaca: true });
+        localStorage.setItem('chatHexahustle', JSON.stringify(chat));
+
+        // Simulasi balasan dari admin
+        setTimeout(() => {
+          chat.push({ dari: 'admin', teks: 'Terima kasih atas pesan Anda! Kami akan segera merespon.', dibaca: false });
+          localStorage.setItem('chatHexahustle', JSON.stringify(chat));
+          tampilkanChat();
+        }, 1000);
+
+        // Tampilkan pesan
+        tampilkanChat();
+
+        // Reset input form
+        pesanInput.value = '';
+      }
+    }
+
+    // Menandai pesan dari admin sebagai sudah dibaca
+    function tandaiPesanDibaca(index) {
+      if (chat[index].dari === 'admin' && !chat[index].dibaca) {
+        chat[index].dibaca = true;
+        localStorage.setItem('chatHexahustle', JSON.stringify(chat));
+        tampilkanChat();
+      }
+    }
+
+    // Event listener untuk menandai pesan admin sebagai dibaca
+    document.getElementById('chatArea').addEventListener('click', (e) => {
+      if (e.target && e.target.closest('.bg-blue-900')) {
+        const index = Array.from(e.target.closest('.bg-blue-900').parentNode.children).indexOf(e.target.closest('.bg-blue-900'));
+        tandaiPesanDibaca(index);
+      }
+    });
+
+    // Tampilkan chat yang ada ketika halaman dibuka
+    tampilkanChat();
+  </script>
+
+</body>
+</html>
