@@ -136,6 +136,22 @@
     });
 
     tampilkanChat();
+    
+  function kirimPesanUser(namaUser, isiPesan) {
+    const pesanSebelumnya = JSON.parse(localStorage.getItem("chatHexahustle")) || [];
+
+    const pesanBaru = {
+      id: "pesan-" + (pesanSebelumnya.length + 1),
+      dari: "user",
+      nama: namaUser,
+      teks: isiPesan,
+      waktu: new Date().toISOString(),
+      dibaca: false
+    };
+
+    pesanSebelumnya.push(pesanBaru);
+    localStorage.setItem("chatHexahustle", JSON.stringify(pesanSebelumnya));
+  }
   </script>
 
 </body>
