@@ -125,6 +125,28 @@
 
   <!-- Script -->
   <script>
+       // Fungsi untuk menampilkan daftar produk yang dipilih di checkout
+    function tampilkanProdukCheckout() {
+      const daftarProduk = document.getElementById('daftarProduk');
+      const produk = JSON.parse(localStorage.getItem('produkHexahustle')) || [];
+
+      if (produk.length === 0) {
+        daftarProduk.innerHTML = '<p class="text-center text-gray-400">Belum ada produk di keranjang.</p>';
+        return;
+      }
+
+      daftarProduk.innerHTML = '';
+      produk.forEach((item) => {
+        daftarProduk.innerHTML += `
+          <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+            <p><strong>Nama Produk:</strong> ${item.nama}</p>
+            <p><strong>Harga:</strong> Rp${item.harga.toLocaleString('id-ID')}</p>
+            <p><strong>Stok:</strong> ${item.stok} buah</p>
+          </div>
+        `;
+      });
+    }
+
     const buktiInput = document.getElementById("bukti");
     const preview = document.getElementById("preview");
     const previewImage = document.getElementById("previewImage");
