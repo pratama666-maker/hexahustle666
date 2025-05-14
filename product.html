@@ -20,20 +20,20 @@
 
   <!-- 🔹 Gambar Produk -->
   <section class="relative">
-    <img src="https://source.unsplash.com/1200x800/?black,tshirt" alt="Produk" class="w-full h-[300px] object-cover">
+    <img id="produkGambar" src="" alt="Produk" class="w-full h-[300px] object-cover">
   </section>
 
   <!-- 🔹 Info Produk -->
   <section class="p-4">
-    <h1 class="text-2xl font-bold mb-2">Kaos Gothic Hitam Hexa</h1>
-    <div class="flex items-center text-yellow-400 mb-3">
+    <h1 id="produkNama" class="text-2xl font-bold mb-2">Nama Produk</h1>
+    <div id="produkRating" class="flex items-center text-yellow-400 mb-3">
       ★★★★☆ <span class="text-sm text-gray-400 ml-2">(4.5/5 dari 235 ulasan)</span>
     </div>
 
-    <p class="text-lg font-semibold text-green-400 mb-4">Rp149.000</p>
+    <p id="produkHarga" class="text-lg font-semibold text-green-400 mb-4">Rp149.000</p>
 
-    <p class="text-gray-300 text-sm leading-relaxed mb-6">
-      Kaos premium Hexahustle dengan desain gothic modern, menggunakan bahan cotton combed 30s yang adem dan nyaman digunakan. Cocok untuk penggemar musik metal dan fashion punk. Tersedia ukuran S hingga XXL.
+    <p id="produkDeskripsi" class="text-gray-300 text-sm leading-relaxed mb-6">
+      Deskripsi produk akan tampil di sini.
     </p>
 
     <!-- 🔘 Tombol Aksi -->
@@ -42,6 +42,44 @@
       <button class="flex-1 bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition">💰 Beli Sekarang</button>
     </div>
   </section>
+
+  <script>
+    const produkData = {
+      kaos1: {
+        nama: "Kaos Gothic Hitam Hexa",
+        harga: 149000,
+        gambar: "https://source.unsplash.com/1200x800/?black,tshirt",
+        rating: 4.5,
+        ulasan: 235,
+        deskripsi: "Kaos premium Hexahustle dengan desain gothic modern, menggunakan bahan cotton combed 30s yang adem dan nyaman digunakan. Cocok untuk penggemar musik metal dan fashion punk. Tersedia ukuran S hingga XXL."
+      },
+      jaket1: {
+        nama: "Jaket Army Hexa",
+        harga: 279000,
+        gambar: "https://source.unsplash.com/1200x800/?jacket,army",
+        rating: 4.8,
+        ulasan: 120,
+        deskripsi: "Jaket premium Hexahustle dengan desain army. Terbuat dari bahan fleece berkualitas, cocok untuk gaya streetwear dan cuaca dingin."
+      }
+    };
+
+    // Ambil ID produk dari URL
+    const params = new URLSearchParams(window.location.search);
+    const produkID = params.get("id");
+
+    const produk = produkData[produkID];
+
+    // Jika produk ditemukan, tampilkan detailnya
+    if (produk) {
+      document.getElementById("produkGambar").src = produk.gambar;
+      document.getElementById("produkNama").textContent = produk.nama;
+      document.getElementById("produkHarga").textContent = "Rp" + produk.harga.toLocaleString("id-ID");
+      document.getElementById("produkDeskripsi").textContent = produk.deskripsi;
+      document.getElementById("produkRating").innerHTML = `★★★★☆ <span class='text-sm text-gray-400 ml-2'>(${produk.rating}/5 dari ${produk.ulasan} ulasan)</span>`;
+    } else {
+      document.querySelector("section").innerHTML = "<p class='p-4 text-center'>Produk tidak ditemukan 😢</p>";
+    }
+  </script>
 
 </body>
 </html>
