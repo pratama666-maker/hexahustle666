@@ -3,66 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pesanan | Hexahustle</title>
+  <title>Daftar Produk | Hexahustle</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white min-h-screen p-6 space-y-6">
 
-  <h1 class="text-2xl font-bold text-center mb-4">📦 Status Pesanan</h1>
+  <!-- Tombol Kembali -->
+  <div class="mb-6">
+    <a href="beranda.html" class="flex items-center text-blue-400 hover:text-blue-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Kembali ke Beranda
+    </a>
+  </div>
 
-  <div id="daftarPesanan" class="space-y-4"></div>
+  <!-- Judul Halaman -->
+  <h1 class="text-3xl font-bold text-center mb-4">🛒 Daftar Produk</h1>
+
+  <!-- Daftar Produk -->
+  <div id="daftarProduk" class="space-y-6"></div>
 
   <script>
-    // Contoh data pesanan (dapat berasal dari halaman pembayaran atau simpan secara dinamis)
-    let pesanan = JSON.parse(localStorage.getItem('riwayatPesananHexahustle')) || [];
+    // Fungsi untuk menampilkan daftar produk dari localStorage secara real-time
+    function tampilkanProduk() {
+      const daftarProduk = document.getElementById('daftarProduk');
+      const produk = JSON.parse(localStorage.getItem('produkHexahustle')) || [];
 
-    function tampilkanPesanan() {
-      const daftar = document.getElementById('daftarPesanan');
-      if (pesanan.length === 0) {
-        daftar.innerHTML = '<p class="text-center text-gray-400">Belum ada pesanan.</p>';
+      // Jika tidak ada produk
+      if (produk.length === 0) {
+        daftarProduk.innerHTML = '<p class="text-center text-gray-400">Belum ada produk.</p>';
         return;
       }
 
-      daftar.innerHTML = '';
-      pesanan.forEach((item, i) => {
-        daftar.innerHTML += `
-          <div class="bg-gray-800 p-4 rounded shadow-md">
-            <p><strong>Produk:</strong> ${item.nama}</p>
+      // Kosongkan daftar produk sebelumnya
+      daftarProduk.innerHTML = '';
+
+      // Menampilkan produk satu per satu
+      produk.forEach((item) => {
+        daftarProduk.innerHTML += `
+          <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+            <p><strong>Nama Produk:</strong> ${item.nama}</p>
             <p><strong>Harga:</strong> Rp${item.harga.toLocaleString('id-ID')}</p>
-            <p><strong>Status:</strong> 
-              <span class="font-bold ${
-                item.status === 'Sedang Diproses' ? 'text-yellow-400' :
-                item.status === 'Dikirim' ? 'text-blue-400' :
-                'text-green-400'
-              }">${item.status}</span>
-            </p>
-            <p class="text-sm text-gray-400">📅 ${new Date(item.tanggal).toLocaleString()}</p>
+            <p><strong>Stok:</strong> ${item.stok} buah</p>
+            <p class="text-sm text-gray-400">📅 Ditambahkan pada: ${new Date(item.tanggal).toLocaleString()}</p>
           </div>
         `;
       });
     }
 
-    // Simulasi notifikasi update status
-    function simulasiUpdateStatus() {
-      pesanan = pesanan.map((p, i) => {
-        if (p.status === 'Sedang Diproses') p.status = 'Dikirim';
-        else if (p.status === 'Dikirim') p.status = 'Selesai';
-        return p;
-      });
-      localStorage.setItem('riwayatPesananHexahustle', JSON.stringify(pesanan));
-      tampilkanPesanan();
-      alert('✅ Status pesanan diperbarui.');
+    // Fungsi untuk menambahkan produk baru ke localStorage
+    function tambahProduk(nama, harga, stok) {
+      const produkBaru = {
+        nama,
+        harga,
+        stok,
+        tanggal: new Date().toISOString()
+      };
+
+      let produk = JSON.parse(localStorage.getItem('produkHexahustle')) || [];
+      produk.push(produkBaru);
+      localStorage.setItem('produkHexahustle', JSON.stringify(produk));
+
+      // Menampilkan produk setelah ditambahkan
+      tampilkanProduk();
     }
 
-    // Tombol simulasi update
-    const tombolUpdate = document.createElement('button');
-    tombolUpdate.innerText = '🔁 Simulasi Update Status';
-    tombolUpdate.className = 'bg-gray-700 px-4 py-2 rounded hover:bg-gray-600';
-    tombolUpdate.onclick = simulasiUpdateStatus;
-    document.body.appendChild(tombolUpdate);
 
-    // Inisialisasi tampilan
-    tampilkanPesanan();
+
+    // Inisialisasi tampilan produk
+    tampilkanProduk();
+
+    // Untuk simulasi update, bisa dipanggil dengan tombol atau event lainnya
   </script>
+
 </body>
 </html>
