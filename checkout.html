@@ -5,36 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pembayaran | Hexahustle</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom Zoom for Image Preview */
+    #previewImage {
+      transition: transform 0.2s ease-in-out;
+    }
+    #previewImage:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white min-h-screen flex flex-col">
+
+ <!-- Header Pembayaran -->
+<div class="p-4 flex items-center justify-between border-b border-gray-700">
+  <!-- Tombol Kembali -->
+  <button onclick="window.history.back()" class="flex items-center text-white hover:text-green-400 transition duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span>Kembali</span>
+  </button>
 
   <!-- Judul -->
-  <div class="p-4 text-center border-b border-gray-700">
-    <h1 class="text-2xl font-bold">💳 Pembayaran</h1>
-  </div>
+  <h1 class="text-2xl font-bold text-center flex-grow -ml-6">💳 Pembayaran</h1>
+</div>
 
   <!-- Form Pembayaran -->
   <form class="p-6 space-y-6" onsubmit="return simpanPembayaran()">
+    <!-- Harga Barang -->
+    <div>
+      <label class="block mb-2 font-medium">Harga Barang</label>
+      <input type="text" id="hargaBarang" value="Rp 500.000" disabled class="w-full p-3 bg-gray-800 text-white rounded-lg" />
+    </div>
+
+    <!-- Total Harga -->
+    <div>
+      <label class="block mb-2 font-medium">Total Harga</label>
+      <input type="text" id="totalHarga" value="Rp 500.000" disabled class="w-full p-3 bg-gray-800 text-white rounded-lg" />
+    </div>
+
+    <!-- Alamat Pengiriman -->
+    <div>
+      <label for="alamat" class="block mb-2 font-medium">Alamat Pengiriman</label>
+      <textarea id="alamat" required class="w-full p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Masukkan alamat lengkap"></textarea>
+    </div>
+
+    <!-- Jenis Pengiriman -->
+    <div>
+      <label for="jenisPengiriman" class="block mb-2 font-medium">Jenis Pengiriman</label>
+      <select id="jenisPengiriman" required class="w-full p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" onchange="hitungTotalHarga()">
+        <option value="">-- Pilih Jenis Pengiriman --</option>
+        <option value="Regular">Regular (+Rp 10.000)</option>
+        <option value="Express">Express (+Rp 20.000)</option>
+        <option value="Same Day">Same Day (+Rp 50.000)</option>
+      </select>
+    </div>
+
     <!-- Pilih Metode Pembayaran -->
     <div>
       <label for="metode" class="block mb-2 font-medium">Pilih Metode Pembayaran</label>
-      <select id="metode" required class="w-full p-2 bg-gray-800 text-white rounded-lg">
+      <select id="metode" required class="w-full p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         <option value="">-- Pilih Bank/Metode --</option>
-        <option value="BCA">BCA</option>
-        <option value="BRI">BRI</option>
-        <option value="Mandiri">Mandiri</option>
-        <option value="Dana">Dana</option>
-        <option value="OVO">OVO</option>
-        <option value="Gopay">Gopay</option>
-        <option value="Bank Jago">Bank Jago</option>
-        <option value="CIMB">CIMB</option>
+        <option value="BCA">BCA: 33334343434</option>
+        <option value="BRI">BRI: 3434343434</option>
+        <option value="BNI">BNI: 34343434</option>
+        <option value="Mandiri">Mandiri: 23434343434</option>
+        <option value="CIMB">CIMB: 2323242434343</option>
+        <option value="Dana">Dana: 09899787</option>
+        <option value="OVO">OVO: 089898898</option>
+        <option value="Gopay">Gopay: 089898989</option>
+        <option value="ShopeePay">ShopeePay: 08988989</option>
+        <option value="QRIS">QRIS</option>
       </select>
     </div>
 
     <!-- Upload Bukti Transfer -->
     <div>
       <label for="bukti" class="block mb-2 font-medium">Upload Bukti Transfer</label>
-      <input type="file" id="bukti" accept="image/*" required class="w-full p-2 bg-gray-800 text-white rounded-lg">
+      <input type="file" id="bukti" accept="image/*" required class="w-full p-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
     </div>
 
     <!-- Tampilkan Preview -->
@@ -44,16 +93,54 @@
     </div>
 
     <!-- Tombol Kirim -->
-    <button type="submit" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
+    <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-300">
       🚀 Kirim & Simpan Pembayaran
     </button>
   </form>
+
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="hidden flex items-center justify-center fixed inset-0 bg-gray-800 bg-opacity-50 z-50">
+    <div class="w-12 h-12 border-t-4 border-green-600 border-solid rounded-full animate-spin"></div>
+  </div>
+
+  <!-- Struk Pembayaran (Downloadable & Printable) -->
+  <div id="strukPembayaran" class="hidden mt-6 bg-gray-800 p-6 rounded-lg">
+    <h2 class="text-xl font-bold mb-4">Struk Pembayaran</h2>
+    <div class="text-white">
+      <p><strong>Total Harga:</strong> Rp 500.000</p>
+      <p><strong>Alamat Pengiriman:</strong> <span id="strukAlamat"></span></p>
+      <p><strong>Jenis Pengiriman:</strong> <span id="strukJenisPengiriman"></span></p>
+      <p><strong>Metode Pembayaran:</strong> <span id="strukMetodePembayaran"></span></p>
+      <p><strong>Status Pembayaran:</strong> <span class="text-green-500">Sukses</span></p>
+      <div id="strukBukti" class="mt-4">
+        <p>Bukti Transfer:</p>
+        <img id="strukImage" src="" alt="Bukti Transfer" class="w-full max-w-sm rounded-lg"/>
+      </div>
+      <div class="mt-4">
+        <button onclick="downloadStruk()" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg">Download Struk</button>
+        <button onclick="printStruk()" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg">Print Struk</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Script -->
   <script>
     const buktiInput = document.getElementById("bukti");
     const preview = document.getElementById("preview");
     const previewImage = document.getElementById("previewImage");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const strukPembayaran = document.getElementById("strukPembayaran");
+    const strukAlamat = document.getElementById("strukAlamat");
+    const strukJenisPengiriman = document.getElementById("strukJenisPengiriman");
+    const strukMetodePembayaran = document.getElementById("strukMetodePembayaran");
+    const strukImage = document.getElementById("strukImage");
+
+    const hargaBarang = 500000; // Harga barang yang tetap
+    const biayaPengiriman = {
+      "Regular": 10000,
+      "Express": 20000,
+      "Same Day": 50000
+    };
 
     buktiInput.addEventListener("change", function () {
       const file = this.files[0];
@@ -67,31 +154,77 @@
       }
     });
 
+    function hitungTotalHarga() {
+      const jenisPengiriman = document.getElementById("jenisPengiriman").value;
+      let total = hargaBarang;
+
+      if (jenisPengiriman && biayaPengiriman[jenisPengiriman]) {
+        total += biayaPengiriman[jenisPengiriman];
+      }
+
+      document.getElementById("totalHarga").value = `Rp ${total.toLocaleString()}`;
+    }
+
     function simpanPembayaran() {
       const metode = document.getElementById("metode").value;
       const bukti = document.getElementById("bukti").files[0];
+      const alamat = document.getElementById("alamat").value;
+      const jenisPengiriman = document.getElementById("jenisPengiriman").value;
 
-      if (!metode || !bukti) {
+      if (!metode || !bukti || !alamat || !jenisPengiriman) {
         alert("Lengkapi semua data pembayaran.");
         return false;
       }
+
+      loadingSpinner.classList.remove("hidden");
 
       const reader = new FileReader();
       reader.onload = function (e) {
         const pembayaran = {
           metode: metode,
           buktiBase64: e.target.result,
-          waktu: new Date().toISOString()
+          alamat: alamat,
+          jenisPengiriman: jenisPengiriman,
+          waktu: new Date().toISOString(),
+          total: hargaBarang + biayaPengiriman[jenisPengiriman]
         };
+
+        // Simpan ke localStorage atau kirim ke server
         localStorage.setItem("pembayaranHexahustle", JSON.stringify(pembayaran));
-        alert("Pembayaran disimpan di perangkat!");
-        window.location.href = "beranda.html"; // Ganti dengan halaman beranda atau sukses
-      };
-      reader.readAsDataURL(bukti);
 
-      return false; // prevent form submit
-    }
-  </script>
+        // Menyembunyikan spinner dan memberikan umpan balik sukses
+        loadingSpinner.classList.add("hidden");
+        alert("Pembayaran berhasil disimpan di perangkat!");
 
-</body>
-</html>
+        // Tampilkan struk pembayaran
+        strukAlamat.textContent = alamat;
+        strukJenisPengiriman.textContent =
+jenisPengiriman;
+strukMetodePembayaran.textContent = metode;
+strukImage.src = e.target.result;
+document.querySelector("#strukPembayaran p strong").textContent = "Total Harga: Rp " + pembayaran.total.toLocaleString();
+strukPembayaran.classList.remove("hidden");
+};
+reader.readAsDataURL(bukti);  return false;
+}
+
+function downloadStruk() {
+  const strukHTML = document.getElementById("strukPembayaran").outerHTML;
+  const blob = new Blob([strukHTML], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "struk_pembayaran.html";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function printStruk() {
+  const printContents = document.getElementById("strukPembayaran").innerHTML;
+  const originalContents = document.body.innerHTML;
+  document.body.innerHTML = printContents;
+  window.print();
+  document.body.innerHTML = originalContents;
+  location.reload();
+}
+</script> </body> </html>
