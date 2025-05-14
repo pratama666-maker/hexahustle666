@@ -227,4 +227,31 @@ function printStruk() {
   document.body.innerHTML = originalContents;
   location.reload();
 }
+     function simpanPesanan({
+    nama,
+    alamat,
+    total,
+    jenisPengiriman,
+    metode,
+    noRekening,
+    buktiBase64
+  }) {
+    const dataLama = JSON.parse(localStorage.getItem("pembayaranHexahustle")) || [];
+
+    const pesananBaru = {
+      id: "order-" + (dataLama.length + 1),
+      nama: nama,
+      alamat: alamat,
+      total: total,
+      jenisPengiriman: jenisPengiriman,
+      metode: metode,
+      noRekening: noRekening,
+      buktiBase64: buktiBase64,
+      status: "Menunggu Konfirmasi",
+      waktu: new Date().toISOString()
+    };
+
+    dataLama.push(pesananBaru);
+    localStorage.setItem("pembayaranHexahustle", JSON.stringify(dataLama));
+  }
 </script> </body> </html>
