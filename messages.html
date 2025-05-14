@@ -6,84 +6,84 @@
   <title>Pesan | Hexahustle</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white min-h-screen p-6 space-y-6">
+<body class="bg-black text-white min-h-screen flex flex-col">
 
-  <h1 class="text-2xl font-bold text-center mb-4">💬 Chat dengan Admin</h1>
-
-  <!-- Area Chat -->
-  <div id="chatArea" class="bg-gray-800 p-4 rounded h-72 overflow-y-scroll mb-4">
-    <!-- Pesan akan ditampilkan di sini -->
+  <!-- 🔝 Header Chat -->
+  <div class="bg-black flex items-center justify-between px-4 py-3 shadow-md border-b border-gray-700">
+    <a href="https://pratama666-maker.github.io/hexahustle666/profile" class="text-white text-lg font-bold flex items-center gap-2 hover:text-gray-300 transition-colors">
+      <svg class="w-6 h-6 fill-current"><use xlink:href="#icon-back"></use></svg>
+    </a>
+    <h1 class="text-lg font-semibold">Admin Hexahustle</h1>
+    <div class="w-6"></div> <!-- Space to keep title centered -->
   </div>
 
-  <!-- Form Kirim Pesan -->
-  <form id="chatForm" class="flex items-center space-x-2" onsubmit="kirimPesan(event)">
-    <input id="pesanInput" type="text" placeholder="Tulis pesan..." class="w-full p-2 rounded bg-gray-700 text-white" required />
-    <button type="submit" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Kirim</button>
+  <!-- 🚨 Notifikasi -->
+  <div id="notifikasi" class="hidden p-3 bg-yellow-600 text-black text-center text-sm font-medium rounded-md">
+    🔔 Anda memiliki balasan baru dari Admin!
+  </div>
+
+  <!-- 💬 Area Chat -->
+  <div id="chatArea" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 bg-gray-800">
+    <!-- Pesan akan muncul di sini -->
+  </div>
+
+  <!-- 📤 Form Kirim Pesan -->
+  <form id="chatForm" class="flex items-center gap-2 p-4 bg-black border-t border-gray-700" onsubmit="kirimPesan(event)">
+    <input id="pesanInput" type="text" placeholder="Tulis pesan..." class="flex-1 px-3 py-2 rounded-md bg-gray-700 text-white outline-none focus:ring-2 focus:ring-gray-500 transition-all" required />
+    <input id="fileInput" type="file" class="hidden" accept="audio/*, image/*, video/*, .pdf, .docx"/>
+    <button type="button" onclick="document.getElementById('fileInput').click()" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-md transition-all">
+      <svg class="w-5 h-5 fill-current"><use xlink:href="#icon-file"></use></svg>
+    </button>
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white transition-all">
+      <svg class="w-5 h-5 fill-current"><use xlink:href="#icon-send"></use></svg>
+    </button>
   </form>
 
-  <script>
-    // Ambil chat yang sudah ada dari localStorage
-    let chat = JSON.parse(localStorage.getItem('chatHexahustle')) || [];
+  <!-- Notifikasi Suara -->
+  <audio id="notifSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
-    function tampilkanChat() {
-      const chatArea = document.getElementById('chatArea');
-      chatArea.innerHTML = '';  // Clear chat area
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pesan | Hexahustle</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-black text-white min-h-screen p-6 space-y-6">
-
-  <h1 class="text-2xl font-bold text-center mb-4">💬 Chat dengan Admin</h1>
-
-  <!-- Notifikasi jika ada balasan baru -->
-  <div id="notifikasi" class="hidden p-3 bg-yellow-600 text-black text-center rounded">
-    Anda memiliki balasan baru dari Admin!
-  </div>
-
-  <!-- Area Chat -->
-  <div id="chatArea" class="bg-gray-800 p-4 rounded h-72 overflow-y-scroll mb-4">
-    <!-- Pesan akan ditampilkan di sini -->
-  </div>
-
-  <!-- Form Kirim Pesan -->
-  <form id="chatForm" class="flex items-center space-x-2" onsubmit="kirimPesan(event)">
-    <input id="pesanInput" type="text" placeholder="Tulis pesan..." class="w-full p-2 rounded bg-gray-700 text-white" required />
-    <button type="submit" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Kirim</button>
-  </form>
+  <!-- SVG Icons -->
+  <svg style="display: none">
+    <symbol id="icon-send" viewBox="0 0 24 24">
+      <path d="M21 2l-2 9-9 2 2 9 9-2-2-9z"/>
+    </symbol>
+    <symbol id="icon-file" viewBox="0 0 24 24">
+      <path d="M6 2h12v18H6z"/>
+    </symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24">
+      <path d="M14 3l-10 10 10 10 1.41-1.41L7.83 13H21V11H7.83L15.41 4.41z"/>
+    </symbol>
+  </svg>
 
   <script>
-    // Ambil chat yang sudah ada dari localStorage
     let chat = JSON.parse(localStorage.getItem('chatHexahustle')) || [];
 
     function tampilkanChat() {
       const chatArea = document.getElementById('chatArea');
       const notifikasi = document.getElementById('notifikasi');
-      chatArea.innerHTML = '';  // Clear chat area
+      chatArea.innerHTML = '';
 
       chat.forEach((message, index) => {
         const isAdmin = message.dari === 'admin';
-        chatArea.innerHTML += `
-          <div class="mb-3 ${isAdmin ? 'bg-blue-900 text-white' : 'bg-gray-700 text-gray-300'} p-2 rounded max-w-xs ${isAdmin ? 'ml-auto' : 'mr-auto'}">
-            <strong>${isAdmin ? 'Admin' : 'Anda'}:</strong> ${message.teks}
-            ${!isAdmin && !message.dibaca ? `<span class="text-yellow-400 ml-2">(Belum Dibaca)</span>` : ''}
-          </div>
+        const waktuKirim = new Date(message.waktu).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-xs p-3 rounded-md text-sm ${isAdmin ? 'ml-auto bg-blue-900 text-white' : 'mr-auto bg-gray-700 text-gray-300'}`;
+        bubble.innerHTML = `
+          <strong>${isAdmin ? 'Admin' : 'Anda'}:</strong> ${message.teks}
+          <div class="text-xs text-gray-400 mt-1">${waktuKirim}</div>
+          ${!isAdmin && !message.dibaca ? `<span class="text-yellow-400 ml-2">(Belum Dibaca)</span>` : ''}
         `;
+        chatArea.appendChild(bubble);
       });
 
-      // Scroll ke pesan terakhir
       chatArea.scrollTop = chatArea.scrollHeight;
 
-      // Jika ada pesan dari admin yang belum dibaca, tampilkan notifikasi
       const belumDibaca = chat.some(msg => msg.dari === 'admin' && !msg.dibaca);
+      notifikasi.classList.toggle('hidden', !belumDibaca);
+
+      // Suara notifikasi ketika ada balasan baru
       if (belumDibaca) {
-        notifikasi.classList.remove('hidden');
-      } else {
-        notifikasi.classList.add('hidden');
+        document.getElementById('notifSound').play();
       }
     }
 
@@ -91,26 +91,34 @@
       event.preventDefault();
       const pesanInput = document.getElementById('pesanInput');
       const pesan = pesanInput.value.trim();
+      const waktu = new Date().toISOString();
 
-      if (pesan) {
-        // Simpan pesan yang dikirim oleh user
-        chat.push({ dari: 'user', teks: pesan, dibaca: true });
+      if (!pesan) return;
+
+      // Simpan pesan dari user
+      chat.push({ dari: 'user', teks: pesan, dibaca: true, waktu: waktu });
+      localStorage.setItem('chatHexahustle', JSON.stringify(chat));
+      tampilkanChat();
+      pesanInput.value = '';
+
+      // Simulasi balasan admin
+      setTimeout(() => {
+        chat.push({ dari: 'admin', teks: 'Terima kasih atas pesan Anda! Kami akan segera merespon.', dibaca: false, waktu: new Date().toISOString() });
         localStorage.setItem('chatHexahustle', JSON.stringify(chat));
-
-        // Simulasi balasan dari admin
-        setTimeout(() => {
-          chat.push({ dari: 'admin', teks: 'Terima kasih atas pesan Anda! Kami akan segera merespon.', dibaca: false });
-          localStorage.setItem('chatHexahustle', JSON.stringify(chat));
-          tampilkanChat();
-        }, 1000);
-
-        // Tampilkan pesan
         tampilkanChat();
-
-        // Reset input form
-        pesanInput.value = '';
-      }
+      }, 1200);
     }
+
+    // Fungsi untuk menangani file yang dikirimkan
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // Bisa ditambahkan logika kirim file disini (misal: upload ke server, atau simpan di chat)
+        chat.push({ dari: 'user', teks: `Mengirim file: ${file.name}`, dibaca: true, waktu: new Date().toISOString() });
+        localStorage.setItem('chatHexahustle', JSON.stringify(chat));
+        tampilkanChat();
+      }
+    });
 
     // Menandai pesan dari admin sebagai sudah dibaca
     function tandaiPesanDibaca(index) {
@@ -121,17 +129,15 @@
       }
     }
 
-    // Event listener untuk menandai pesan admin sebagai dibaca
     document.getElementById('chatArea').addEventListener('click', (e) => {
-      if (e.target && e.target.closest('.bg-blue-900')) {
-        const index = Array.from(e.target.closest('.bg-blue-900').parentNode.children).indexOf(e.target.closest('.bg-blue-900'));
-        tandaiPesanDibaca(index);
-      }
+      const bubbles = [...document.querySelectorAll('#chatArea > div')];
+      const index = bubbles.indexOf(e.target.closest('div'));
+      if (index !== -1) tandaiPesanDibaca(index);
     });
 
-    // Tampilkan chat yang ada ketika halaman dibuka
     tampilkanChat();
   </script>
 
 </body>
 </html>
+
