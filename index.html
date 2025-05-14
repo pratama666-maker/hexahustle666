@@ -43,15 +43,30 @@
     </div>
   </section>
 
-  <!-- 🧩 Kategori -->
-  <section class="bg-white text-black p-4">
-    <div class="grid grid-cols-4 gap-4">
-      <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Kaos</button>
-      <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Jaket</button>
-      <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Topi</button>
-      <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Aksesoris</button>
-    </div>
-  </section>
+<!-- 🧩 Kategori -->
+<section class="bg-white text-black p-4">
+  <div class="grid grid-cols-5 gap-4">
+    <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Kaos</button>
+    <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Jaket</button>
+    <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Topi</button>
+    <button class="rounded-xl p-3 bg-gray-100 hover:bg-black hover:text-white transition">Aksesoris</button>
+
+    <!-- 🔍 Hasil Pencarian -->
+<section id="search-results" class="bg-gray-100 text-black p-4 hidden">
+  <h2 class="text-xl font-semibold mb-2">Hasil Pencarian:</h2>
+  <div id="results-container" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+</section>
+
+    
+    <!-- Tombol Pesan dengan Link -->
+    <a href="https://pratama666-maker.github.io/hexahustle666/messages" class="flex items-center justify-center gap-2 rounded-xl p-3 bg-red-600 text-white hover:bg-red-700 transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+      </svg>
+      Pesan
+    </a>
+  </div>
+</section>
 
 <!-- 🛍️ Produk -->
 <section class="bg-gray-100 text-black p-4">
@@ -249,6 +264,50 @@
     Pesanan
   </a>
 </nav>
-  
+  <body class="bg-black text-white font-sans pb-20">
+
+
+  <script>
+  const produk = [
+    { nama: 'Kaos Hexa Death', harga: 'Rp149.000', img: 'https://source.unsplash.com/400x400/?tshirt,dark' },
+    { nama: 'Jaket Gothic', harga: 'Rp249.000', img: 'https://source.unsplash.com/400x400/?jacket,dark' },
+    { nama: 'Topi Hitam Hexa', harga: 'Rp99.000', img: 'https://source.unsplash.com/400x400/?cap,dark' },
+    { nama: 'Aksesoris Gelang', harga: 'Rp59.000', img: 'https://source.unsplash.com/400x400/?accessories,dark' },
+    // kamu bisa tambahkan lebih banyak di sini...
+  ];
+
+  const searchInput = document.querySelector('input[placeholder="Cari produk..."]');
+  const searchSection = document.getElementById('search-results');
+  const resultsContainer = document.getElementById('results-container');
+
+  searchInput.addEventListener('input', function () {
+    const keyword = this.value.toLowerCase();
+    const filtered = produk.filter(p => p.nama.toLowerCase().includes(keyword));
+
+    resultsContainer.innerHTML = '';
+
+    if (keyword && filtered.length > 0) {
+      filtered.forEach(p => {
+        const card = `
+          <div class="bg-white p-3 rounded-xl shadow hover:shadow-xl transition">
+            <img src="${p.img}" alt="${p.nama}" class="rounded-md w-full h-40 object-cover mb-2">
+            <h3 class="font-semibold text-sm">${p.nama}</h3>
+            <p class="text-gray-600 text-sm">${p.harga}</p>
+            <div class="flex items-center gap-1 text-yellow-400 text-sm">★★★★☆ (4.5)</div>
+            <div class="flex gap-2 mt-2">
+              <a href="https://pratama666-maker.github.io/hexahustle666/product" class="flex-1 bg-black text-white py-1 rounded-lg text-sm text-center">Beli</a>
+              <a href="https://pratama666-maker.github.io/hexahustle666/product" class="bg-gray-300 text-black px-3 py-1 rounded-lg text-sm text-center">🛒</a>
+            </div>
+          </div>
+        `;
+        resultsContainer.innerHTML += card;
+      });
+      searchSection.classList.remove('hidden');
+    } else {
+      searchSection.classList.add('hidden');
+    }
+  });
+</script>
+
 </body>
 </html>
