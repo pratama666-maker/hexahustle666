@@ -8,48 +8,80 @@
 </head>
 <body class="bg-black text-white min-h-screen">
 
-  <!-- Judul -->
+  <!-- Tombol Kembali -->
+  <div class="p-4 text-left">
+    <button onclick="goBack()" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">
+      ← Kembali
+    </button>
+  </div>
+
+  <!-- Header Keranjang -->
   <div class="p-4 text-center border-b border-gray-700">
     <h1 class="text-2xl font-bold">🛒 Keranjang Saya</h1>
   </div>
 
   <!-- Daftar Produk -->
   <div class="p-4 space-y-4" id="cart-items">
-    <!-- Contoh Produk -->
-    <div class="flex items-center justify-between bg-gray-900 p-4 rounded-lg shadow-md">
-      <div class="flex items-center space-x-4">
-        <img src="https://via.placeholder.com/60" alt="Produk" class="w-16 h-16 rounded-lg">
-        <div>
-          <h2 class="font-semibold">Kaos Gothic</h2>
-          <p class="text-gray-400">Rp150.000</p>
-          <input type="number" value="1" min="1" class="w-16 mt-2 p-1 bg-gray-800 text-white rounded text-center" onchange="updateTotal()">
-        </div>
-      </div>
-      <button onclick="removeItem(this)" class="text-red-400 hover:text-red-600">✖</button>
-    </div>
-
-    <!-- Tambahkan lebih banyak produk di sini secara dinamis -->
+    <!-- Produk di sini akan ditambahkan dinamis -->
   </div>
 
   <!-- Total & Tombol Bayar -->
-  <div class="p-4 border-t border-gray-700">
+  <div class="p-4 border-t border-gray-700 mt-4">
     <div class="flex justify-between text-lg mb-4">
       <span>Total:</span>
-      <span id="total">Rp150.000</span>
+      <span id="total">Rp0</span>
     </div>
-    <button onclick="lanjutBayar()" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition">
+    <button onclick="lanjutBayar()" class="w-full py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition transform hover:scale-105">
       💳 Lanjut Bayar
     </button>
   </div>
 
-  <!-- Script: Hapus, Hitung Total -->
+  <!-- Script: Hapus, Hitung Total, dan Simpan ke LocalStorage -->
   <script>
-    function removeItem(button) {
-      const item = button.closest('.flex');
-      item.remove();
-      updateTotal();
+    // Fungsi untuk memuat produk dari localStorage
+    function loadCart() {
+      const cartItems = JSON.parse(localStorage.getItem('cartHexahustle')) || [];
+      const cartContainer = document.getElementById('cart-items');
+
+      if (cartItems.length === 0) {
+        cartContainer.innerHTML = '<p class="text-center text-gray-400">Keranjang kosong. Tambahkan produk!</p>';
+        return;
+      }
+
+      cartContainer.innerHTML = ''; // Clear existing items
+
+      cartItems.forEach(item => {
+        const cartItemHTML = `
+          <div class="flex items-center justify-between bg-gray-900 p-4 rounded-lg shadow-md">
+            <div class="flex items-center space-x-4">
+              <img src="${item.gambar}" alt="Produk" class="w-16 h-16 rounded-lg">
+              <div>
+                <h2 class="font-semibold">${item.nama}</h2>
+                <p class="text-gray-400">Rp${item.harga.toLocaleString('id-ID')}</p>
+                <input type="number" value="${item.jumlah}" min="1" class="w-16 mt-2 p-1 bg-gray-800 text-white rounded text-center" onchange="updateTotal()">
+              </div>
+            </div>
+            <button onclick="removeItem(this)" class="text-red-400 hover:text-red-600">✖</button>
+          </div>
+        `;
+        cartContainer.innerHTML += cartItemHTML;
+      });
+
+      updateTotal(); // Update total after loading products
     }
 
+    // Fungsi untuk menghapus produk dari keranjang
+    function removeItem(button) {
+      const item = button.closest('.flex');
+      const productName = item.querySelector('h2').textContent;
+      let cartItems = JSON.parse(localStorage.getItem('cartHexahustle')) || [];
+      cartItems = cartItems.filter(item => item.nama !== productName); // Filter out the removed item
+      localStorage.setItem('cartHexahustle', JSON.stringify(cartItems)); // Update localStorage
+      item.remove(); // Remove item from DOM
+      updateTotal(); // Update the total price
+    }
+
+    // Fungsi untuk menghitung total harga
     function updateTotal() {
       const items = document.querySelectorAll('#cart-items > .flex');
       let total = 0;
@@ -62,11 +94,21 @@
       document.getElementById('total').textContent = "Rp" + total.toLocaleString('id-ID');
     }
 
+    // Fungsi untuk melanjutkan ke halaman pembayaran
     function lanjutBayar() {
       alert("Menuju halaman pembayaran...");
-      window.location.href = "pembayaran.html"; // Ganti dengan halaman pembayaran
+      window.location.href = "pembayaran.html"; // Ganti dengan halaman pembayaran yang sesuai
     }
+
+    // Fungsi untuk kembali ke halaman sebelumnya
+    function goBack() {
+      window.history.back(); // Kembali ke halaman sebelumnya
+    }
+
+    // Inisialisasi keranjang dengan memuat produk dari localStorage
+    loadCart();
   </script>
 
 </body>
 </html>
+
