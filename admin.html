@@ -1,247 +1,140 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<!DOCTYPE html>
-<html lang="id">
-<head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin | Hexahustle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel | Hexahustle</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-active {
+      @apply border-b-2 border-white font-semibold;
+    }
+  </style>
 </head>
-<body class="bg-black text-white p-6">
+<body class="bg-black text-white min-h-screen">
 
-  <h1 class="text-3xl font-bold text-center mb-6">👑 Halaman Admin</h1>
+  <!-- Header -->
+  <div class="p-4 text-center border-b border-gray-700">
+    <h1 class="text-2xl font-bold">🛠️ Panel Admin Hexahustle</h1>
+  </div>
 
-  <!-- Menambah/Edit Produk -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Kelola Produk</h2>
-    <form id="formProduk" class="mb-6">
-      <input type="file" id="gambarProduk" class="p-2 bg-gray-800 text-white rounded w-full mb-4" accept="image/*" required />
-      <input type="text" id="namaProduk" class="p-2 bg-gray-800 text-white rounded w-full mb-4" placeholder="Nama Produk" required />
-      <input type="number" id="hargaProduk" class="p-2 bg-gray-800 text-white rounded w-full mb-4" placeholder="Harga Produk" required />
-      <textarea id="deskripsiProduk" class="p-2 bg-gray-800 text-white rounded w-full mb-4" placeholder="Deskripsi Produk" required></textarea>
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Tambah Produk</button>
-    </form>
-  </section>
+  <!-- Tabs -->
+  <div class="flex justify-center space-x-4 border-b border-gray-600 p-2">
+    <button onclick="switchTab('pesan')" id="tabPesan" class="tab-active">📨 Pesan</button>
+    <button onclick="switchTab('pesanan')" id="tabPesanan">📦 Pesanan</button>
+  </div>
 
-  <!-- Daftar Produk -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Daftar Produk</h2>
-    <table class="min-w-full bg-gray-800 rounded mb-4">
-      <thead>
-        <tr>
-          <th class="p-4 text-left">Gambar</th>
-          <th class="p-4 text-left">Nama Produk</th>
-          <th class="p-4 text-left">Harga</th>
-          <th class="p-4 text-left">Deskripsi</th>
-          <th class="p-4 text-left">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="produkList">
-        <!-- Daftar produk akan ditampilkan di sini -->
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Menandai Status Pesanan -->
-  <section>
-    <h2 class="text-2xl font-bold mb-4">Pesanan Masuk</h2>
-    <table class="min-w-full bg-gray-800 rounded mb-4">
-      <thead>
-        <tr>
-          <th class="p-4 text-left">Nama Pembeli</th>
-          <th class="p-4 text-left">Produk</th>
-          <th class="p-4 text-left">Status</th>
-          <th class="p-4 text-left">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="pesananList">
-        <!-- Daftar pesanan akan ditampilkan di sini -->
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Balas Chat -->
-  <section class="mt-6">
-    <h2 class="text-2xl font-bold mb-4">Chat Pengguna</h2>
-    <div id="chatMessages" class="bg-gray-700 p-4 rounded mb-4 space-y-4">
-      <!-- Chat akan ditampilkan di sini -->
+  <!-- Konten -->
+  <div id="contentPesan" class="p-4">
+    <h2 class="text-lg font-bold mb-3">📨 Daftar Pesan Masuk</h2>
+    <div id="daftarPesan" class="space-y-3">
+      <!-- Pesan akan ditampilkan di sini -->
     </div>
-    <textarea id="adminReply" class="w-full p-2 bg-gray-800 text-white rounded" placeholder="Balas chat di sini..." rows="4"></textarea>
-    <button onclick="balasChat()" class="bg-blue-600 text-white px-4 py-2 rounded mt-4">Kirim Balasan</button>
-  </section>
+    <div id="chatBox" class="hidden mt-6">
+      <h3 class="text-sm font-semibold mb-2">💬 Chat Detail</h3>
+      <div id="chatDetail" class="bg-gray-800 p-3 rounded h-40 overflow-y-scroll mb-2"></div>
+      <form id="balasForm" onsubmit="balasPesan(event)" class="flex space-x-2">
+        <input type="text" id="balasanInput" placeholder="Tulis balasan..." class="w-full p-2 rounded bg-gray-700 text-white" required />
+        <button type="submit" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Kirim</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="contentPesanan" class="p-4 hidden">
+    <h2 class="text-lg font-bold mb-3">📦 Daftar Pesanan</h2>
+    <div id="daftarPesanan" class="space-y-4">
+      <!-- Daftar pesanan muncul di sini -->
+    </div>
+  </div>
 
   <script>
-    let produkList = JSON.parse(localStorage.getItem('produkHexahustle')) || [];
-    let pesananList = JSON.parse(localStorage.getItem('pesananHexahustle')) || [];
-    let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    let currentTab = 'pesan';
+    let pesanData = JSON.parse(localStorage.getItem('chatHexahustle')) || [];
+    let pesananData = JSON.parse(localStorage.getItem('pesananHexahustle')) || [];
+    let selectedUserIndex = null;
 
-    // Menampilkan Produk
-    function tampilkanProduk() {
-      const produkTable = document.getElementById('produkList');
-      produkTable.innerHTML = '';
-      
-      produkList.forEach((produk, index) => {
-        produkTable.innerHTML += `
-          <tr>
-            <td class="p-4"><img src="${produk.gambar}" alt="Gambar Produk" class="w-16 h-16 object-cover rounded"/></td>
-            <td class="p-4">${produk.namaProduk}</td>
-            <td class="p-4">${produk.hargaProduk}</td>
-            <td class="p-4">${produk.deskripsiProduk}</td>
-            <td class="p-4">
-              <button onclick="editProduk(${index})" class="bg-yellow-600 text-white p-2 rounded">Edit</button>
-              <button onclick="hapusProduk(${index})" class="bg-red-600 text-white p-2 rounded ml-2">Hapus</button>
-            </td>
-          </tr>
-        `;
+    function switchTab(tab) {
+      document.getElementById('tabPesan').classList.remove('tab-active');
+      document.getElementById('tabPesanan').classList.remove('tab-active');
+      document.getElementById('contentPesan').classList.add('hidden');
+      document.getElementById('contentPesanan').classList.add('hidden');
+
+      currentTab = tab;
+      document.getElementById('tab' + capitalize(tab)).classList.add('tab-active');
+      document.getElementById('content' + capitalize(tab)).classList.remove('hidden');
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function tampilkanDaftarPesan() {
+      const daftar = document.getElementById('daftarPesan');
+      daftar.innerHTML = '';
+      const grouped = pesanData.reduce((acc, msg) => {
+        acc[msg.user] = acc[msg.user] || [];
+        acc[msg.user].push(msg);
+        return acc;
+      }, {});
+
+      Object.entries(grouped).forEach(([user, pesanList], i) => {
+        daftar.innerHTML += `<div class="p-3 bg-gray-700 rounded cursor-pointer hover:bg-gray-600" onclick="bukaChat(${i}, '${user}')">Pesan dari ${user} (${pesanList.length})</div>`;
       });
     }
 
-    // Menambah Produk Baru
-    document.getElementById('formProduk').addEventListener('submit', function(event) {
+    function bukaChat(index, user) {
+      selectedUserIndex = index;
+      document.getElementById('chatBox').classList.remove('hidden');
+      const chatDetail = document.getElementById('chatDetail');
+      chatDetail.innerHTML = '';
+      const pesanList = pesanData.filter(msg => msg.user === user);
+      pesanList.forEach(pesan => {
+        chatDetail.innerHTML += `<div class="mb-2 ${pesan.dari === 'admin' ? 'text-right text-blue-400' : 'text-left text-white'}">${pesan.teks}</div>`;
+      });
+    }
+
+    function balasPesan(event) {
       event.preventDefault();
-
-      const gambarProduk = document.getElementById('gambarProduk').files[0];
-      const reader = new FileReader();
-      reader.onloadend = function() {
-        const produkBaru = {
-          gambar: reader.result,
-          namaProduk: document.getElementById('namaProduk').value,
-          hargaProduk: document.getElementById('hargaProduk').value,
-          deskripsiProduk: document.getElementById('deskripsiProduk').value,
-        };
-
-        produkList.push(produkBaru);
-        localStorage.setItem('produkHexahustle', JSON.stringify(produkList));
-        alert("Produk berhasil ditambahkan!");
-        tampilkanProduk();
-
-        // Clear form
-        document.getElementById('formProduk').reset();
-      };
-      if (gambarProduk) {
-        reader.readAsDataURL(gambarProduk);
-      }
-    });
-
-    // Mengedit Produk
-    function editProduk(index) {
-      const produk = produkList[index];
-      document.getElementById('namaProduk').value = produk.namaProduk;
-      document.getElementById('hargaProduk').value = produk.hargaProduk;
-      document.getElementById('deskripsiProduk').value = produk.deskripsiProduk;
-      document.getElementById('formProduk').onsubmit = function(event) {
-        event.preventDefault();
-
-        const gambarProduk = document.getElementById('gambarProduk').files[0];
-        const reader = new FileReader();
-        reader.onloadend = function() {
-          produkList[index] = {
-            gambar: gambarProduk ? reader.result : produk.gambar,
-            namaProduk: document.getElementById('namaProduk').value,
-            hargaProduk: document.getElementById('hargaProduk').value,
-            deskripsiProduk: document.getElementById('deskripsiProduk').value,
-          };
-
-          localStorage.setItem('produkHexahustle', JSON.stringify(produkList));
-          alert("Produk berhasil diupdate!");
-          tampilkanProduk();
-          document.getElementById('formProduk').reset();
-        };
-        if (gambarProduk) {
-          reader.readAsDataURL(gambarProduk);
-        }
-      };
+      const input = document.getElementById('balasanInput');
+      const teks = input.value.trim();
+      if (!teks) return;
+      const user = Object.keys(pesanData.reduce((acc, msg) => { acc[msg.user] = true; return acc }, []))[selectedUserIndex];
+      pesanData.push({ dari: 'admin', user, teks, waktu: new Date().toISOString() });
+      localStorage.setItem('chatHexahustle', JSON.stringify(pesanData));
+      bukaChat(selectedUserIndex, user);
+      input.value = '';
     }
 
-    // Menghapus Produk
-    function hapusProduk(index) {
-      produkList.splice(index, 1);
-      localStorage.setItem('produkHexahustle', JSON.stringify(produkList));
-      tampilkanProduk();
-    }
-
-    // Menandai Status Pesanan
-    function ubahStatus(index, status) {
-      pesananList[index].status = status;
-      localStorage.setItem('pesananHexahustle', JSON.stringify(pesananList));
-      tampilkanPesanan();
-      
-      // Kirim notifikasi email (simulasi)
-      kirimEmail(pesananList[index].namaPembeli, status);
-    }
-
-    // Simulasi mengirim email
-    function kirimEmail(namaPembeli, status) {
-      alert(`Notifikasi Email: Pesanan untuk ${namaPembeli} telah diperbarui ke status ${status}`);
-    }
-
-    // Validasi Pesanan
-    function validasiPesanan(index) {
-      pesananList[index].status = "Divalidasi";
-      localStorage.setItem('pesananHexahustle', JSON.stringify(pesananList));
-      alert("Pesanan telah divalidasi.");
-      tampilkanPesanan();
-    }
-
-    // Menampilkan Pesanan
     function tampilkanPesanan() {
-      const pesananTable = document.getElementById('pesananList');
-      pesananTable.innerHTML = '';
-      
-      pesananList.forEach((pesanan, index) => {
-        pesananTable.innerHTML += `
-          <tr>
-            <td class="p-4">${pesanan.namaPembeli}</td>
-            <td class="p-4">${pesanan.produk}</td>
-            <td class="p-4">${pesanan.status}</td>
-            <td class="p-4">
-              <select onchange="ubahStatus(${index}, this.value)" class="bg-gray-700 text-white p-2 rounded">
-                <option value="Sedang Diproses" ${pesanan.status === "Sedang Diproses" ? "selected" : ""}>Sedang Diproses</option>
-                <option value="Dikirim" ${pesanan.status === "Dikirim" ? "selected" : ""}>Dikirim</option>
-                <option value="Selesai" ${pesanan.status === "Selesai" ? "selected" : ""}>Selesai</option>
+      const daftar = document.getElementById('daftarPesanan');
+      daftar.innerHTML = '';
+      pesananData.forEach((item, i) => {
+        daftar.innerHTML += `
+          <div class="bg-gray-800 p-3 rounded">
+            <p><strong>Nama:</strong> ${item.nama}</p>
+            <p><strong>Alamat:</strong> ${item.alamat}</p>
+            <p><strong>Metode:</strong> ${item.metode}</p>
+            <p><strong>Status:</strong> 
+              <select onchange="ubahStatus(${i}, this.value)" class="bg-gray-700 p-1 rounded">
+                <option ${item.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
+                <option ${item.status === 'Dikirim' ? 'selected' : ''}>Dikirim</option>
+                <option ${item.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
               </select>
-              <button onclick="validasiPesanan(${index})" class="bg-green-600 text-white p-2 rounded ml-4">Validasi</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    // Menampilkan Chat
-    function tampilkanChat() {
-      const chatDiv = document.getElementById('chatMessages');
-      chatDiv.innerHTML = '';
-      
-      chatMessages.forEach((chat) => {
-        chatDiv.innerHTML += `
-          <div class="bg-gray-600 p-3 rounded mb-2">
-            <strong>${chat.pengguna}:</strong> ${chat.pesan}
+            </p>
           </div>
         `;
       });
     }
 
-    // Balas Chat
-    function balasChat() {
-      const replyMessage = document.getElementById('adminReply').value;
-      if (replyMessage.trim() !== "") {
-        chatMessages.push({ pengguna: "Admin", pesan: replyMessage });
-        localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
-        tampilkanChat();
-        
-        // Clear input
-        document.getElementById('adminReply').value = '';
-      }
+    function ubahStatus(index, statusBaru) {
+      pesananData[index].status = statusBaru;
+      localStorage.setItem('pesananHexahustle', JSON.stringify(pesananData));
     }
 
-    // Menampilkan data produk, pesanan, dan chat
-    tampilkanProduk();
+    // Inisialisasi
+    tampilkanDaftarPesan();
     tampilkanPesanan();
-    tampilkanChat();
   </script>
 
 </body>
 </html>
-
